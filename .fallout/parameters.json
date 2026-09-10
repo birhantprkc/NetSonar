@@ -1,4 +1,5 @@
 {
   "$schema": "build.schema.json",
-  "Solution": "NetSonar.slnx"
+  "Solution": "NetSonar.slnx",
+  "BuildProjectFile": "builds/build/build.csproj"
 }

@@ -1,4 +1,4 @@
-# v0.5.0 (05/09/2026)
+# v0.5.0 (10/09/2026)
 
 - Add batch import of services for all supported protocols from tab- or pipe-separated clipboard data, including
   explicit protocol schemes, default-port protocol inference, optional intervals, descriptions, groups, duplicate

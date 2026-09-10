@@ -21,7 +21,7 @@
 
     <!-- Generated once; keep these stable so upgrades replace earlier installations. -->
     <PropertyGroup Condition="'$(Platform)' == 'x64'">
-        <UpgradeCode>53783CBC-8249-4455-84C3-279F3EC82269</UpgradeCode>
+        <UpgradeCode>f7f17de8-f082-4cf9-b7ab-7028992450bb</UpgradeCode>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Platform)' == 'arm64'">
