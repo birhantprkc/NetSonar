@@ -1111,6 +1111,9 @@ IP-адрес: {0}
   <data name="Ui.ReplyIPAddress" xml:space="preserve">
     <value>IP-адрес ответа</value>
   </data>
+  <data name="Ui.Report" xml:space="preserve">
+    <value>Отчёт</value>
+  </data>
   <data name="Ui.ReportAnIssue" xml:space="preserve">
     <value>Сообщить о проблеме</value>
   </data>

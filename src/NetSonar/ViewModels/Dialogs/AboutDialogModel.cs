@@ -32,6 +32,8 @@ public partial class AboutDialogModel : DialogViewModelBase
 
     public static string AvaloniaUIDescription => typeof(AvaloniaObject).Assembly.GetName().Version!.ToString(3);
 
+    public static string RuntimeReport => RuntimeDiagnostics.GetReport();
+
     public static string? GraphicCardName => HostSystem.GraphicsCardName;
 
     public static string? ProcessorName => HostSystem.ProcessorName;

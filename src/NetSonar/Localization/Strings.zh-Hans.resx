@@ -1116,6 +1116,9 @@ IP 地址：{0}
   <data name="Ui.ReplyIPAddress" xml:space="preserve">
     <value>回复 IP 地址</value>
   </data>
+  <data name="Ui.Report" xml:space="preserve">
+    <value>报告</value>
+  </data>
   <data name="Ui.ReportAnIssue" xml:space="preserve">
     <value>报告问题</value>
   </data>

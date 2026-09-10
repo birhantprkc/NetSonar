@@ -1111,6 +1111,9 @@ Czy chcesz kontynuować?</value>
   <data name="Ui.ReplyIPAddress" xml:space="preserve">
     <value>Adres IP odpowiedzi</value>
   </data>
+  <data name="Ui.Report" xml:space="preserve">
+    <value>Raport</value>
+  </data>
   <data name="Ui.ReportAnIssue" xml:space="preserve">
     <value>Zgłoś problem</value>
   </data>

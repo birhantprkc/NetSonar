@@ -1111,6 +1111,9 @@ Anfitrión: {1}
   <data name="Ui.ReplyIPAddress" xml:space="preserve">
     <value>Responder dirección IP</value>
   </data>
+  <data name="Ui.Report" xml:space="preserve">
+    <value>Informe</value>
+  </data>
   <data name="Ui.ReportAnIssue" xml:space="preserve">
     <value>Informar un problema</value>
   </data>

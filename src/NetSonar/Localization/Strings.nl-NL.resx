@@ -1111,6 +1111,9 @@ Weet u zeker dat u wilt doorgaan?</value>
   <data name="Ui.ReplyIPAddress" xml:space="preserve">
     <value>IP-adres van antwoord</value>
   </data>
+  <data name="Ui.Report" xml:space="preserve">
+    <value>Rapport</value>
+  </data>
   <data name="Ui.ReportAnIssue" xml:space="preserve">
     <value>Een probleem melden</value>
   </data>

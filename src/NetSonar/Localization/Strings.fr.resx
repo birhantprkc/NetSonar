@@ -1111,6 +1111,9 @@ Hôte : {1}
   <data name="Ui.ReplyIPAddress" xml:space="preserve">
     <value>Adresse IP de réponse</value>
   </data>
+  <data name="Ui.Report" xml:space="preserve">
+    <value>Rapport</value>
+  </data>
   <data name="Ui.ReportAnIssue" xml:space="preserve">
     <value>Signaler un problème</value>
   </data>

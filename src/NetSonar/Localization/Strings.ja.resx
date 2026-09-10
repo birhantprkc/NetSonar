@@ -1111,6 +1111,9 @@ IP アドレス: {0}
   <data name="Ui.ReplyIPAddress" xml:space="preserve">
     <value>返信IPアドレス</value>
   </data>
+  <data name="Ui.Report" xml:space="preserve">
+    <value>レポート</value>
+  </data>
   <data name="Ui.ReportAnIssue" xml:space="preserve">
     <value>問題を報告する</value>
   </data>

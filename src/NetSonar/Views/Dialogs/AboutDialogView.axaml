@@ -1,7 +1,7 @@
 <controls:UserControlBase x:Class="NetSonar.Avalonia.Views.Dialogs.AboutDialogView"
                           xmlns="https://github.com/avaloniaui"
                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:localization="clr-namespace:NetSonar.Avalonia.Localization"
+                          xmlns:localization="clr-namespace:NetSonar.Avalonia.Localization"
                           xmlns:app="clr-namespace:NetSonar.Avalonia"
                           xmlns:controls="clr-namespace:NetSonar.Avalonia.Controls"
                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -12,14 +12,14 @@
                           xmlns:stageKit="clr-namespace:StageKit;assembly=StageKit"
                           xmlns:runtime="clr-namespace:StageKit.Runtime;assembly=StageKit.Runtime"
                           d:DesignHeight="650"
-                          d:DesignWidth="1000"
+                          d:DesignWidth="1060"
                           x:DataType="dialogs:AboutDialogModel"
                           mc:Ignorable="d">
     <Design.DataContext>
         <dialogs:AboutDialogModel />
     </Design.DataContext>
 
-    <suki:SukiMessageBoxHost Classes="AppPanel">
+    <suki:SukiMessageBoxHost Classes="AppPanel" Width="1060">
         <suki:SukiMessageBoxHost.FooterLeftItemsSource>
             <Button Command="{Binding CopyInformationToClipboardCommand}"
                     Content="{icon:MaterialIconTextExt Kind=ContentCopy,
@@ -35,7 +35,7 @@
             <Button Classes="Flat"
                     Command="{Binding CloseDialogCommand}"
                     Content="{icon:MaterialIconTextExt Kind=CloseBold,
-                                                       Text=Close}"
+                                                       Text={localization:Translate Common.Close}}"
                     IsCancel="True" />
         </suki:SukiMessageBoxHost.ActionButtonsSource>
         <DockPanel HorizontalSpacing="20">
@@ -143,7 +143,6 @@
                      Path="/Assets/NetSonar.svg" />
 
                 <TabControl Grid.Row="4"
-                            Width="560"
                             MaxHeight="335"
                             VerticalAlignment="Top">
                     <TabItem Header="{localization:Translate Ui.Description}">
@@ -177,6 +176,11 @@
                         <TextBox VerticalContentAlignment="Top"
                                  Classes="ReadOnlyMultiLineWrap"
                                  Text="{Binding Source={x:Static app:App.LicenseText}}" />
+                    </TabItem>
+                    <TabItem Header="{localization:Translate Ui.Report}">
+                        <TextBox VerticalContentAlignment="Top"
+                                 Classes="ReadOnlyMultiLineWrap"
+                                 Text="{Binding RuntimeReport}" />
                     </TabItem>
                 </TabControl>
             </Grid>

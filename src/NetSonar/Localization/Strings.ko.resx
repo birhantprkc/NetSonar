@@ -1111,6 +1111,9 @@ IP 주소: {0}
   <data name="Ui.ReplyIPAddress" xml:space="preserve">
     <value>응답 IP 주소</value>
   </data>
+  <data name="Ui.Report" xml:space="preserve">
+    <value>보고서</value>
+  </data>
   <data name="Ui.ReportAnIssue" xml:space="preserve">
     <value>문제 신고</value>
   </data>

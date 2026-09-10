@@ -1111,6 +1111,9 @@ Devam etmek istediğinizden emin misiniz?</value>
   <data name="Ui.ReplyIPAddress" xml:space="preserve">
     <value>Yanıt IP adresi</value>
   </data>
+  <data name="Ui.Report" xml:space="preserve">
+    <value>Rapor</value>
+  </data>
   <data name="Ui.ReportAnIssue" xml:space="preserve">
     <value>Sorun bildir</value>
   </data>
