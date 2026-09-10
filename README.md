@@ -15,10 +15,11 @@ Designed for administrators and developers needing lightweight, cross-platform n
 
 ## ⬇️ Download the latest version at:
 
-## To auto-install on Windows (package manager):
+## To auto-install on Windows:
 
 - **Winget:** `winget install -e --id PTRTECH.NetSonar`
-- Winget is included on Windows 10 with recent updates and Windows 11 by default.
+  - Winget is a package manager included on Windows 10 with recent updates and Windows 11 by default.
+- **Powershell:** `Invoke-RestMethod https://raw.githubusercontent.com/sn4k3/NetSonar/main/scripts/install-netsonar.ps1 | Invoke-Expression`
 
 ## To auto-install on Linux:
 
@@ -168,10 +169,10 @@ NetSonar can be run with the following arguments:
 
 - `--portable [level]`: Run in portable mode, configurations are saved near the executable. Use level to specify the
   directory level, e.g. `0` for the current directory, `1` for the parent directory, etc.
-    - `NetSonar.exe --portable` will save the configuration in the same directory as the executable.
+  - `NetSonar.exe --portable` will save the configuration in the same directory as the executable.
 - `--profile-path <path>`: Specify the path to the profile file.
-    - `NetSonar.exe --profile-path D:\NetSonarConfigs` will use the profile file at the specified path.
-    - `NetSonar.exe --profile-path NetSonarConfigs` will use the profile path relative to the executable path.
+  - `NetSonar.exe --profile-path D:\NetSonarConfigs` will use the profile file at the specified path.
+  - `NetSonar.exe --profile-path NetSonarConfigs` will use the profile path relative to the executable path.
 
 Note: Both `--portable` and `--profile-path` can be used together, but `--profile-path` will take precedence if both are
 specified.

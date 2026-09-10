@@ -18,8 +18,10 @@
 - Show the assigned hotkey in the tooltips of the added, resume all, pause all, and open-graph buttons
 - Add data grid shortcuts to delete the selected rows and all rows, and to invert the selection, while leaving keys
   alone during cell editing
-- Add debian, rhel, and arch linux packages, it will now prioritize the system-wide package manager and fallback to AppImage
+- Add debian, rhel, and arch linux packages, it will now prioritize the system-wide package manager and fallback to
+  AppImage
 - Add macOS pkg installer for a more user-friendly installation experience
+- Document installation through the remote Windows PowerShell script
 - Fix the macOS gestures of pause all and resume all colliding with pause selected and resume selected, and the resume
   all context-menu entry advertising the resume selected gesture
 - Refine Simplified Chinese translations by @dearmb (#26)
