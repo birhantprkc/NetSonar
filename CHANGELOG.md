@@ -14,7 +14,7 @@
 - Add keyboard shortcuts to the service’s page for adding, editing, pausing, resuming, toggling, resetting statistics,
   and opening graphs, and show the matching gesture on the context-menu entries
 - Add a report tab on the dialog with app diagnostics
-- Add application RAM usage to title bar 
+- Add application RAM usage to title bar
 - Show the assigned hotkey in the tooltips of the added, resume all, pause all, and open-graph buttons
 - Add data grid shortcuts to delete the selected rows and all rows, and to invert the selection, while leaving keys
   alone during cell editing

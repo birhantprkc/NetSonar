@@ -14,6 +14,10 @@
     <File Path="Directory.Build.props" />
     <File Path="LICENSE" />
     <File Path="README.md" />
+    <File Path="scripts/install-netsonar.ps1" />
+    <File Path="scripts/install-netsonar.sh" />
+    <File Path="scripts/uninstall-netsonar.ps1" />
+    <File Path="scripts/uninstall-netsonar.sh" />
     <File Path="TermsOfUse.md" />
   </Folder>
   <Project Path="builds/build/build.csproj">
