@@ -20,7 +20,8 @@ public class Build : StageKitBuild
             ApplicationPackagingType.LinuxDeb,
             ApplicationPackagingType.LinuxRpm,
             ApplicationPackagingType.LinuxArchPackage,
-            ApplicationPackagingType.MacOSAppBundle
+            ApplicationPackagingType.MacOSAppBundle,
+            ApplicationPackagingType.MacOSPkg
         ];
     }
 

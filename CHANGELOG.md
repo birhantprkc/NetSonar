@@ -4,7 +4,7 @@
   explicit protocol schemes, default-port protocol inference, optional intervals, descriptions, groups, duplicate
   reporting, and IPv6 support by @dearmb (#24)
 - Add editing of existing ping services from the service’s page, reusing the Add Ping Services dialog in edit mode for
-  one or several selected services, applying the changes in place and rebuilding only the services whose protocol or
+  one or several selected services, applying the changes in place, and rebuilding only the services whose protocol or
   address changed while keeping their list position by @dearmb (#25)
 - Reject edits that would give a service the same protocol and address as another service, leaving the whole edit
   unapplied instead of creating a duplicate
@@ -18,6 +18,8 @@
 - Show the assigned hotkey in the tooltips of the added, resume all, pause all, and open-graph buttons
 - Add data grid shortcuts to delete the selected rows and all rows, and to invert the selection, while leaving keys
   alone during cell editing
+- Add debian, rhel, and arch linux packages, it will now prioritize the system-wide package manager and fallback to AppImage
+- Add macOS pkg installer for a more user-friendly installation experience
 - Fix the macOS gestures of pause all and resume all colliding with pause selected and resume selected, and the resume
   all context-menu entry advertising the resume selected gesture
 - Refine Simplified Chinese translations by @dearmb (#26)
