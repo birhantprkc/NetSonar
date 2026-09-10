@@ -6,6 +6,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
+using NetSonar.Avalonia.Extensions;
 using NetSonar.Avalonia.Settings;
 
 namespace NetSonar.Avalonia.Views;
@@ -15,16 +16,20 @@ public partial class MainWindow : GenericWindow
     public MainWindow()
     {
         InitializeComponent();
-        Title = $"{App.SoftwareWithVersion}   [{RuntimeInformation.RuntimeIdentifier}]";
-#if DEBUG
-        Title += " [Debug]";
-#endif
+        
+        SetTitle();
 
         KeyBindings.Add(new KeyBinding
         {
             Gesture = new KeyGesture(Key.F11),
             Command = new RelayCommand(ToggleFullScreen)
         });
+        
+        DispatcherTimer.Run(() =>
+        {
+            SetTitle();
+            return true;
+        }, TimeSpan.FromSeconds(2));
     }
 
     protected override void OnLoaded(RoutedEventArgs e)
@@ -65,5 +70,13 @@ public partial class MainWindow : GenericWindow
         }
 
         base.OnClosing(e);
+    }
+
+    private void SetTitle()
+    {
+        Title = $"{App.SoftwareWithVersion}   [{RuntimeInformation.RuntimeIdentifier}] [{ConverterExtension.ToFileSizeString(Environment.WorkingSet)}]";
+#if DEBUG
+        Title += " [Debug]";
+#endif
     }
 }
