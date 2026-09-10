@@ -12,11 +12,16 @@ on:
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_NOLOGO: true
+  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
   WINGET_PACKAGE_ID: PTRTECH.NetSonar
   WINGET_TOKEN: ${{ secrets.WINGET_TOKEN }}
 
 permissions:
   contents: read
+
+concurrency:
+  group: release-${{ github.workflow }}
+  cancel-in-progress: false
 
 jobs:
   extract_information:
@@ -32,9 +37,17 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Set up .NET 10
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.NUGET_PACKAGES }}
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.props', '**/*.targets', 'NuGet.Config', 'global.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
       - name: Validate localization resources
         shell: pwsh
@@ -47,52 +60,69 @@ jobs:
         run: dotnet test tests/NetSonar.Tests/NetSonar.Tests.csproj --configuration Release --no-restore
 
   build:
-    name: '🛠️ Build (${{ matrix.rid }})'
+    name: '🛠️ Publish asset (${{ matrix.rid }})'
     needs: [extract_information, test]
+    timeout-minutes: 60
     strategy:
+      fail-fast: false
       matrix:
         include:
           - rid: win-x64
             os: windows-latest
           - rid: linux-x64
-            os: ubuntu-latest
+            os: ubuntu-24.04
           - rid: linux-arm64
-            os: ubuntu-latest
+            os: ubuntu-24.04-arm
           - rid: osx-x64
-            os: macos-latest
+            os: macos-15-intel
           - rid: osx-arm64
-            os: macos-latest
+            os: macos-15
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v7
+      - name: Check out source
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.ref }}
 
-      - uses: actions/setup-dotnet@v5
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '10.0.x'
 
-      - run: dotnet tool install Nuke.GlobalTool --global
-      - run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+      - name: Cache NuGet packages
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.NUGET_PACKAGES }}
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.props', '**/*.targets', 'NuGet.Config', 'global.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
-      - name: Install libfuse2 (Linux only)
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-latest-arm64'
+      - name: Restore dependencies
+        run: dotnet restore NetSonar.slnx -p:NuGetAudit=false
+
+      - name: Install Linux packaging tools
+        if: ${{ startsWith(matrix.os, 'ubuntu-') }}
         run: |
           sudo apt-get update
-          sudo apt-get install -y libfuse2 libglib2.0-0
+          sudo apt-get install --yes dpkg-dev rpm makepkg pacman-package-manager fakeroot zstd libarchive-tools
+          command -v dpkg-deb
+          command -v rpmbuild
+          command -v makepkg
+          command -v pacman
+          command -v bsdtar
 
-      - run: nuke publish --rids ${{ matrix.rid }} --publish-discard-non-bundles
+      - name: Publish runtime asset
+        run: >-
+          dotnet run --project builds/build/build.csproj
+          --configuration Release --no-restore --
+          Publish --rids ${{ matrix.rid }} --delete-publish-directories
 
       - name: Upload release assets
         uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.rid }}
-          path: |
-            artifacts/publish/*.zip
-            artifacts/publish/*.AppImage
-            artifacts/publish/*.msi
-            artifacts/publish/*.dmg
+          path: artifacts/publish/*
           if-no-files-found: error
 
   create_tag:
