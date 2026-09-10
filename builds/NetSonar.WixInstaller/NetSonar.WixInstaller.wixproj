@@ -1,0 +1,81 @@
+<Project Sdk="WixToolset.Sdk/7.0.0">
+
+    <PropertyGroup>
+        <OutputType>Package</OutputType>
+        <AcceptEula>wix7</AcceptEula>
+        <!-- Same-version replacement is intentional (MajorUpgrade.AllowSameVersionUpgrades). -->
+        <SuppressIces>$(SuppressIces);ICE61</SuppressIces>
+        <!-- Keep the MSI in the output root while resolving English UI strings. -->
+        <Cultures>neutral,en-US</Cultures>
+        <InstallerPlatform>$(Platform)</InstallerPlatform>
+        <OutputName>$(ApplicationName)_$(RuntimeIdentifier)_v$(BuildVersion)</OutputName>
+        <LicenseFile>$(MSBuildProjectDirectory)\Resources\License.rtf</LicenseFile>
+        <InstallerDialogImage>$(MSBuildProjectDirectory)\Resources\InstallerDialogImage.png</InstallerDialogImage>
+        <InstallerBannerImage>$(MSBuildProjectDirectory)\Resources\InstallerBannerImage.png</InstallerBannerImage>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(ArtifactsPath)' != ''">
+        <OutputPath>$(ArtifactsPath)\bin\$(MSBuildProjectName)\$(Configuration)\</OutputPath>
+        <IntermediateOutputPath>$(ArtifactsPath)\obj\$(MSBuildProjectName)\$(Configuration)\</IntermediateOutputPath>
+    </PropertyGroup>
+
+    <!-- Generated once; keep these stable so upgrades replace earlier installations. -->
+    <PropertyGroup Condition="'$(Platform)' == 'x64'">
+        <UpgradeCode>53783CBC-8249-4455-84C3-279F3EC82269</UpgradeCode>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Platform)' == 'arm64'">
+        <UpgradeCode>91876A42-8F51-4CE7-AE38-C5189BA6CE92</UpgradeCode>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <DefineConstants>$(DefineConstants);ApplicationName=$(ApplicationName);ApplicationExecutableName=$(ApplicationExecutableName);BuildVersion=$(BuildVersion);Company=$(Company);Copyright=$(Copyright);RepositoryUrl=$(RepositoryUrl);ApplicationIcon=$(ApplicationIcon);LicenseFile=$(LicenseFile);UpgradeCode=$(UpgradeCode)</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <BindPath Include="$(PublishDirectory)" BindName="Publish"/>
+        <PackageReference Include="WixToolset.UI.wixext" Version="7.0.0"/>
+    </ItemGroup>
+
+    <!-- Optional artwork; omit either property to retain that WixUI default image. -->
+    <PropertyGroup Condition="'$(InstallerDialogImage)' != ''">
+        <DefineConstants>$(DefineConstants);InstallerDialogImage=$(InstallerDialogImage)</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(InstallerBannerImage)' != ''">
+        <DefineConstants>$(DefineConstants);InstallerBannerImage=$(InstallerBannerImage)</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="Resources\InstallerBannerImage.png"/>
+        <Content Include="Resources\InstallerDialogImage.png"/>
+        <Content Include="Resources\License.rtf"/>
+    </ItemGroup>
+
+    <Target Name="ValidateInstallerInputs" BeforeTargets="CoreCompile">
+        <Error Condition="'$(InstallerDialogImage)' != '' And !Exists('$(InstallerDialogImage)')"
+               Text="Installer dialog image '$(InstallerDialogImage)' does not exist."/>
+        <Error Condition="'$(InstallerBannerImage)' != '' And !Exists('$(InstallerBannerImage)')"
+               Text="Installer banner image '$(InstallerBannerImage)' does not exist."/>
+        <Error Condition="'$(PublishDirectory)' == ''"
+               Text="PublishDirectory must be provided by the Fallout publish pipeline."/>
+        <Error Condition="'$(ApplicationName)' == ''"
+               Text="ApplicationName must be provided by the Fallout publish pipeline."/>
+        <Error Condition="'$(ApplicationExecutableName)' == ''"
+               Text="ApplicationExecutableName must be provided by the Fallout publish pipeline."/>
+        <Error Condition="'$(BuildVersion)' == ''"
+               Text="BuildVersion must be provided by the Fallout publish pipeline."/>
+        <Error Condition="'$(RuntimeIdentifier)' == ''"
+               Text="RuntimeIdentifier must be provided by the Fallout publish pipeline."/>
+        <Error Condition="'$(Platform)' != 'x64' And '$(Platform)' != 'arm64'"
+               Text="Platform must be x64 or arm64, but was '$(Platform)'."/>
+        <Error Condition="!Exists('$(PublishDirectory)')"
+               Text="PublishDirectory '$(PublishDirectory)' does not exist."/>
+        <Error Condition="!Exists('$(PublishDirectory)\$(ApplicationExecutableName).exe')"
+               Text="Application executable '$(PublishDirectory)\$(ApplicationExecutableName).exe' does not exist."/>
+        <Error Condition="!Exists('$(ApplicationIcon)')"
+               Text="Application icon '$(ApplicationIcon)' does not exist."/>
+        <Error Condition="!Exists('$(LicenseFile)')"
+               Text="Installer license '$(LicenseFile)' does not exist."/>
+    </Target>
+
+</Project>

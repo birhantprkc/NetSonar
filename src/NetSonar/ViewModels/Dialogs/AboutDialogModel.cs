@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using StageKit.Primitives.System;
+using StageKit.Runtime;
 using SukiUI.Dialogs;
 
 namespace NetSonar.Avalonia.ViewModels.Dialogs;
@@ -30,9 +32,9 @@ public partial class AboutDialogModel : DialogViewModelBase
 
     public static string AvaloniaUIDescription => typeof(AvaloniaObject).Assembly.GetName().Version!.ToString(3);
 
-    public static string? GraphicCardName => SystemAware.GetGraphicCardName();
+    public static string? GraphicCardName => HostSystem.GraphicsCardName;
 
-    public static string? ProcessorName => SystemAware.GetProcessorName();
+    public static string? ProcessorName => HostSystem.ProcessorName;
 
     public static int ProcessorCount => Environment.ProcessorCount;
 
@@ -40,14 +42,13 @@ public partial class AboutDialogModel : DialogViewModelBase
     {
         get
         {
-            var memory = SystemAware.GetMemoryStatus();
-            if (memory.ullTotalPhys == 0)
+            if (HostSystem.TryGetMemoryStatus(out var memory) || memory.TotalPhysicalBytes == 0)
             {
                 return App.Localization["Common.Unknown"];
             }
 
             var factor = Math.Pow(1024, 3);
-            return $"{(memory.ullTotalPhys - memory.ullAvailPhys) / factor:F2} / {memory.ullTotalPhys / factor:F2} GB";
+            return $"{memory.UsedPhysicalBytes / factor:F2} / {memory.TotalPhysicalBytes / factor:F2} GB";
         }
     }
 
@@ -86,6 +87,7 @@ public partial class AboutDialogModel : DialogViewModelBase
                                                  Framework: {FrameworkDescription}
                                                  AvaloniaUI: {AvaloniaUIDescription}
                                                  Screen(s): {ScreensDescription}
+                                                 Package: {EntryApplication.PackagingType}
                                                  """;
 
     [ObservableProperty]

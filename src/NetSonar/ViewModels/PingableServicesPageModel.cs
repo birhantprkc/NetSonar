@@ -26,6 +26,7 @@ using NetSonar.Avalonia.ViewModels.Dialogs;
 using NetSonar.Avalonia.ViewModels.Fragments;
 using NetSonar.Avalonia.Views;
 using ObservableCollections;
+using StageKit.Primitives.System;
 using SukiUI.Dialogs;
 using ZLinq;
 using Timer = System.Timers.Timer;
@@ -97,32 +98,40 @@ public partial class PingableServicesPageModel : PageViewModelBase
 
     public DataGridCollectionView ServicesGroupView { get; }
 
+    public bool IsAnyServiceSelected => _servicesDataGrid?.SelectedIndex != -1;
 
-    public PingableService? SelectedService
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanOpenAnyInBrowser), nameof(IsAnyServiceSelected))]
+    public partial PingableService? SelectedService { get; set; }
+
+    [ObservableProperty]
+    public partial NotifyCollectionChangedSynchronizedViewList<PingableServiceReply>? SelectedServicePingReplies
     {
         get;
-        set
-        {
-            if (!SetProperty(ref field, value)) return;
-            //_pingRepliesSortColumn.Sort(ListSortDirection.Descending);
-            SelectedServicePingReplies =
-                value?.Pings.ToNotifyCollectionChangedSlim(SynchronizationContextCollectionEventDispatcher.Current);
-            PingGraphModel.Services = _servicesDataGrid.SelectedItems.AsValueEnumerable<PingableService>().ToArray();
-        }
-    }
-
-    public NotifyCollectionChangedSynchronizedViewList<PingableServiceReply>? SelectedServicePingReplies
-    {
-        get;
-        set
-        {
-            var oldValue = field;
-            if (!SetProperty(ref field, value)) return;
-            oldValue?.Dispose();
-        }
+        set;
     }
 
     public PingableServiceGraphFragmentModel PingGraphModel { get; } = new();
+
+    public bool CanOpenAnyInBrowser => _servicesDataGrid.SelectedItems
+        .AsValueEnumerable()
+        .Cast<PingableService>()
+        .Any(item => item.ProtocolType is ServiceProtocolType.HTTP or ServiceProtocolType.ICMP);
+
+    partial void OnSelectedServicePingRepliesChanged(
+        NotifyCollectionChangedSynchronizedViewList<PingableServiceReply>? oldValue,
+        NotifyCollectionChangedSynchronizedViewList<PingableServiceReply>? newValue)
+    {
+        oldValue?.Dispose();
+    }
+
+    partial void OnSelectedServiceChanged(PingableService? value)
+    {
+        if (value is null) return;
+        SelectedServicePingReplies =
+            value.Pings.ToNotifyCollectionChangedSlim(SynchronizationContextCollectionEventDispatcher.Current);
+        PingGraphModel.Services = _servicesDataGrid.SelectedItems.AsValueEnumerable<PingableService>().ToArray();
+    }
 
     protected internal override void OnInitialized()
     {
@@ -139,7 +148,6 @@ public partial class PingableServicesPageModel : PageViewModelBase
 
         _servicesDataGrid.ItemsSource = ServicesGroupView;
 
-        _servicesDataGrid.KeyUp += ServicesDataGridOnKeyUp;
         _servicesPingsDataGrid.Sorting += ServicesPingsDataGridOnSorting;
         _servicesPingsDataGrid.LoadingRow += ServicesPingsDataGridOnLoadingRow;
         _servicesDataGrid.ColumnDisplayIndexChanged += ServicesDataGridOnColumnDisplayIndexChanged;
@@ -272,22 +280,6 @@ public partial class PingableServicesPageModel : PageViewModelBase
         });*/
     }
 
-    private void ServicesDataGridOnKeyUp(object? sender, KeyEventArgs e)
-    {
-        if (e.KeyModifiers == KeyModifiers.Shift)
-        {
-            if (e.Key == Key.Delete)
-            {
-                RemoveSelectedServices();
-                e.Handled = true;
-                return;
-            }
-
-            return;
-        }
-    }
-
-
     private void ServicesPingsDataGridOnSorting(object? sender, DataGridColumnEventArgs e)
     {
         //_pingRepliesSortColumn = e.Column;
@@ -399,7 +391,7 @@ public partial class PingableServicesPageModel : PageViewModelBase
         dialog.TryShow();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsAnyServiceSelected))]
     public void EditSelectedServices()
     {
         if (_servicesDataGrid.SelectedIndex == -1) return;
@@ -424,7 +416,7 @@ public partial class PingableServicesPageModel : PageViewModelBase
         dialog.TryShow();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsAnyServiceSelected))]
     public void ToggleEnabledSelectedService()
     {
         if (_servicesDataGrid.SelectedIndex == -1) return;
@@ -443,7 +435,7 @@ public partial class PingableServicesPageModel : PageViewModelBase
     }
 
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsAnyServiceSelected))]
     public void PauseSelectedService()
     {
         if (_servicesDataGrid.SelectedIndex == -1) return;
@@ -452,7 +444,7 @@ public partial class PingableServicesPageModel : PageViewModelBase
     }
 
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsAnyServiceSelected))]
     public void PauseSelectedServices()
     {
         if (_servicesDataGrid.SelectedIndex == -1) return;
@@ -472,7 +464,7 @@ public partial class PingableServicesPageModel : PageViewModelBase
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsAnyServiceSelected))]
     public void ResumeSelectedService()
     {
         if (_servicesDataGrid.SelectedIndex == -1) return;
@@ -480,7 +472,7 @@ public partial class PingableServicesPageModel : PageViewModelBase
         service.IsEnabled = true;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsAnyServiceSelected))]
     public void ResumeSelectedServices()
     {
         if (_servicesDataGrid.SelectedIndex == -1) return;
@@ -500,7 +492,7 @@ public partial class PingableServicesPageModel : PageViewModelBase
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsAnyServiceSelected))]
     public void ResetServiceStatisticsForSelectedItem()
     {
         if (_servicesDataGrid.SelectedIndex == -1 ||
@@ -513,7 +505,7 @@ public partial class PingableServicesPageModel : PageViewModelBase
             .TryShow();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsAnyServiceSelected))]
     public void ResetServiceStatisticsForSelectedItems()
     {
         if (_servicesDataGrid.SelectedIndex == -1) return;
@@ -545,7 +537,7 @@ public partial class PingableServicesPageModel : PageViewModelBase
             .TryShow();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsAnyServiceSelected))]
     public void RemoveSelectedServices()
     {
         if (_servicesDataGrid.SelectedIndex == -1) return;
@@ -566,16 +558,19 @@ public partial class PingableServicesPageModel : PageViewModelBase
             .TryShow();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsAnyServiceSelected))]
     public async Task ExportSelectedServicesToJson()
     {
         if (_servicesDataGrid.SelectedIndex == -1) return;
+        var selectedServices = _servicesDataGrid.SelectedItems.AsValueEnumerable<PingableService>().ToArray();
+        if (selectedServices.Length == 0) return;
+
         using var file = await TopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             ShowOverwritePrompt = true,
             SuggestedFileName =
                 StringExtensions.GetSafeFilename(
-                    $"services#{_servicesDataGrid.SelectedItems.Count}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
+                    $"services#{selectedServices.Length}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
             DefaultExtension = "json",
             FileTypeChoices = AvaloniaExtensions.FilePickerJson
         });
@@ -587,14 +582,14 @@ public partial class PingableServicesPageModel : PageViewModelBase
             var filePath = file.TryGetLocalPath();
             if (filePath is null) return;
             await using var stream = File.Create(filePath);
-            await JsonSerializer.SerializeAsync(stream, _servicesDataGrid.SelectedItems, App.JsonSerializerOptions);
+            await JsonSerializer.SerializeAsync(stream, selectedServices, App.JsonSerializerOptions);
             App.ShowToast(NotificationType.Success,
                 App.Localization["Export.Services.Title"],
-                App.Localization.Format("Export.Services.Success", _servicesDataGrid.SelectedItems.Count, file.Name),
+                App.Localization.Format("Export.Services.Success", selectedServices.Length, file.Name),
                 new ToastActionButton(App.Localization["Common.OpenFile"],
-                    toast => { SystemAware.StartProcess(filePath); }),
+                    toast => { HostSystem.OpenFile(filePath); }),
                 new ToastActionButton(App.Localization["Common.OpenFolder"],
-                    toast => { SystemAware.SelectFileOnExplorer(filePath); })
+                    toast => { HostSystem.ShowFileInFileManager(filePath); })
             );
         }
         catch (Exception e)
@@ -607,12 +602,14 @@ public partial class PingableServicesPageModel : PageViewModelBase
     [RelayCommand]
     public static async Task ExportAllServicesToJson()
     {
-        if (Services.Count == 0) return;
+        var services = Services.AsValueEnumerable().ToArray();
+        if (services.Length == 0) return;
+
         using var file = await TopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             ShowOverwritePrompt = true,
             SuggestedFileName =
-                StringExtensions.GetSafeFilename($"services#{Services.Count}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
+                StringExtensions.GetSafeFilename($"services#{services.Length}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
             DefaultExtension = "json",
             FileTypeChoices = AvaloniaExtensions.FilePickerJson
         });
@@ -624,14 +621,14 @@ public partial class PingableServicesPageModel : PageViewModelBase
             var filePath = file.TryGetLocalPath();
             if (filePath is null) return;
             await using var stream = File.Create(filePath);
-            await JsonSerializer.SerializeAsync(stream, Services, App.JsonSerializerOptions);
+            await JsonSerializer.SerializeAsync(stream, services, App.JsonSerializerOptions);
             App.ShowToast(NotificationType.Success,
                 App.Localization["Export.Services.Title"],
-                App.Localization.Format("Export.Services.Success", Services.Count, file.Name),
+                App.Localization.Format("Export.Services.Success", services.Length, file.Name),
                 new ToastActionButton(App.Localization["Common.OpenFile"],
-                    toast => { SystemAware.StartProcess(filePath); }),
+                    toast => { HostSystem.OpenFile(filePath); }),
                 new ToastActionButton(App.Localization["Common.OpenFolder"],
-                    toast => { SystemAware.SelectFileOnExplorer(filePath); })
+                    toast => { HostSystem.ShowFileInFileManager(filePath); })
             );
         }
         catch (Exception e)
@@ -642,15 +639,17 @@ public partial class PingableServicesPageModel : PageViewModelBase
     }
 
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsAnyServiceSelected))]
     public async Task ExportCurrentPingsToCsv()
     {
-        if (SelectedService is null || !TopLevel.StorageProvider.CanSave) return;
+        var selectedService = SelectedService;
+        if (selectedService is null || !TopLevel.StorageProvider.CanSave) return;
+
         using var file = await TopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             ShowOverwritePrompt = true,
             SuggestedFileName = StringExtensions.GetSafeFilename(
-                $"{SelectedService.ProtocolType.ToString().ToLowerInvariant()}-{SelectedService.HostName}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.csv"),
+                $"{selectedService.ProtocolType.ToString().ToLowerInvariant()}-{selectedService.HostName}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.csv"),
             DefaultExtension = "csv",
             FileTypeChoices = AvaloniaExtensions.FilePickerCsv
         });
@@ -663,6 +662,7 @@ public partial class PingableServicesPageModel : PageViewModelBase
             if (filePath is null) return;
             await using var stream = await file.OpenWriteAsync();
             await using var textWriter = new StreamWriter(stream);
+            var pings = selectedService.Pings.AsValueEnumerable().ToArray();
             await textWriter.WriteLineAsync(string.Format("{0};{1};{2};{3};{4};{5};{6};{7}",
                 nameof(PingableServiceReply.IsSucceeded),
                 nameof(PingableServiceReply.Status),
@@ -674,10 +674,8 @@ public partial class PingableServicesPageModel : PageViewModelBase
                 nameof(PingableServiceReply.BufferLength)
             ));
 
-            var count = SelectedService.Pings.Count;
-            for (var i = 0; i < SelectedService.Pings.Count; i++)
+            foreach (var reply in pings)
             {
-                var reply = SelectedService.Pings[i];
                 await textWriter.WriteLineAsync(string.Format("{0};{1};{2};{3};{4};{5};{6};{7}",
                     reply.IsSucceeded,
                     reply.Status,
@@ -692,11 +690,11 @@ public partial class PingableServicesPageModel : PageViewModelBase
 
             App.ShowToast(NotificationType.Success,
                 App.Localization["Export.Pings.CsvTitle"],
-                App.Localization.Format("Export.Pings.Success", count, SelectedService.HostName, file.Name),
+                App.Localization.Format("Export.Pings.Success", pings.Length, selectedService.HostName, file.Name),
                 new ToastActionButton(App.Localization["Common.OpenFile"],
-                    toast => { SystemAware.StartProcess(filePath); }),
+                    toast => { HostSystem.OpenFile(filePath); }),
                 new ToastActionButton(App.Localization["Common.OpenFolder"],
-                    toast => { SystemAware.SelectFileOnExplorer(filePath); })
+                    toast => { HostSystem.ShowFileInFileManager(filePath); })
             );
         }
         catch (Exception e)
@@ -709,15 +707,17 @@ public partial class PingableServicesPageModel : PageViewModelBase
     /// <summary>
     /// Exports the pings of the selected service as tab separated values, ready to paste into a spreadsheet.
     /// </summary>
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsAnyServiceSelected))]
     public async Task ExportCurrentPingsToTabular()
     {
-        if (SelectedService is null || !TopLevel.StorageProvider.CanSave || SelectedService.Pings.Count == 0) return;
+        var selectedService = SelectedService;
+        if (selectedService is null || !TopLevel.StorageProvider.CanSave || selectedService.Pings.Count == 0) return;
+
         using var file = await TopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             ShowOverwritePrompt = true,
             SuggestedFileName = StringExtensions.GetSafeFilename(
-                $"{SelectedService.ProtocolType.ToString().ToLowerInvariant()}-{SelectedService.HostName}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.tsv"),
+                $"{selectedService.ProtocolType.ToString().ToLowerInvariant()}-{selectedService.HostName}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.tsv"),
             DefaultExtension = "tsv",
             FileTypeChoices = AvaloniaExtensions.FilePickerTsv
         });
@@ -730,6 +730,7 @@ public partial class PingableServicesPageModel : PageViewModelBase
             if (filePath is null) return;
             await using var stream = await file.OpenWriteAsync();
             await using var textWriter = new StreamWriter(stream);
+            var pings = selectedService.Pings.AsValueEnumerable().ToArray();
             await textWriter.WriteLineAsync(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}",
                 nameof(PingableServiceReply.IsSucceeded),
                 nameof(PingableServiceReply.Status),
@@ -741,10 +742,8 @@ public partial class PingableServicesPageModel : PageViewModelBase
                 nameof(PingableServiceReply.BufferLength)
             ));
 
-            var count = SelectedService.Pings.Count;
-            for (var i = 0; i < SelectedService.Pings.Count; i++)
+            foreach (var reply in pings)
             {
-                var reply = SelectedService.Pings[i];
                 await textWriter.WriteLineAsync(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}",
                     reply.IsSucceeded,
                     reply.Status,
@@ -759,11 +758,11 @@ public partial class PingableServicesPageModel : PageViewModelBase
 
             App.ShowToast(NotificationType.Success,
                 App.Localization["Export.Pings.TsvTitle"],
-                App.Localization.Format("Export.Pings.Success", count, SelectedService.HostName, file.Name),
+                App.Localization.Format("Export.Pings.Success", pings.Length, selectedService.HostName, file.Name),
                 new ToastActionButton(App.Localization["Common.OpenFile"],
-                    toast => { SystemAware.StartProcess(filePath); }),
+                    toast => { HostSystem.OpenFile(filePath); }),
                 new ToastActionButton(App.Localization["Common.OpenFolder"],
-                    toast => { SystemAware.SelectFileOnExplorer(filePath); })
+                    toast => { HostSystem.ShowFileInFileManager(filePath); })
             );
         }
         catch (Exception e)
@@ -773,15 +772,17 @@ public partial class PingableServicesPageModel : PageViewModelBase
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsAnyServiceSelected))]
     public async Task ExportCurrentPingsToJson()
     {
-        if (SelectedService is null || !TopLevel.StorageProvider.CanSave || SelectedService.Pings.Count == 0) return;
+        var selectedService = SelectedService;
+        if (selectedService is null || !TopLevel.StorageProvider.CanSave || selectedService.Pings.Count == 0) return;
+
         using var file = await TopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             ShowOverwritePrompt = true,
             SuggestedFileName = StringExtensions.GetSafeFilename(
-                $"{SelectedService.ProtocolType.ToString().ToLowerInvariant()}-{SelectedService.HostName}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
+                $"{selectedService.ProtocolType.ToString().ToLowerInvariant()}-{selectedService.HostName}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
             DefaultExtension = "json",
             FileTypeChoices = AvaloniaExtensions.FilePickerJson
         });
@@ -793,15 +794,15 @@ public partial class PingableServicesPageModel : PageViewModelBase
             var filePath = file.TryGetLocalPath();
             if (filePath is null) return;
             await using var stream = File.Create(filePath);
-            var count = SelectedService.Pings.Count;
-            await JsonSerializer.SerializeAsync(stream, SelectedService.Pings, App.JsonSerializerOptions);
+            var pings = selectedService.Pings.AsValueEnumerable().ToArray();
+            await JsonSerializer.SerializeAsync(stream, pings, App.JsonSerializerOptions);
             App.ShowToast(NotificationType.Success,
                 App.Localization["Export.Pings.JsonTitle"],
-                App.Localization.Format("Export.Pings.Success", count, SelectedService.HostName, file.Name),
+                App.Localization.Format("Export.Pings.Success", pings.Length, selectedService.HostName, file.Name),
                 new ToastActionButton(App.Localization["Common.OpenFile"],
-                    toast => { SystemAware.StartProcess(filePath); }),
+                    toast => { HostSystem.OpenFile(filePath); }),
                 new ToastActionButton(App.Localization["Common.OpenFolder"],
-                    toast => { SystemAware.SelectFileOnExplorer(filePath); })
+                    toast => { HostSystem.ShowFileInFileManager(filePath); })
             );
         }
         catch (Exception e)
@@ -811,7 +812,7 @@ public partial class PingableServicesPageModel : PageViewModelBase
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsAnyServiceSelected))]
     public void OpenSelectedGraphInNewWindow()
     {
         if (_servicesDataGrid.SelectedIndex == -1) return;
@@ -832,7 +833,7 @@ public partial class PingableServicesPageModel : PageViewModelBase
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsAnyServiceSelected))]
     public void OpenGraphInNewWindow()
     {
         if (SelectedService is null) return;
@@ -864,6 +865,22 @@ public partial class PingableServicesPageModel : PageViewModelBase
         }
 
         window.Show(App.MainWindow);
+    }
+
+    [RelayCommand(CanExecute = nameof(CanOpenAnyInBrowser))]
+    public Task<bool> OpenSelectedInBrowser()
+    {
+        if (_servicesDataGrid.SelectedIndex == -1) return Task.FromResult(false);
+        var openedAny = false;
+
+        foreach (PingableService selectedItem in _servicesDataGrid.SelectedItems)
+        {
+            if (selectedItem.ProtocolType is not ServiceProtocolType.HTTP and not ServiceProtocolType.ICMP) continue;
+            LaunchUriAsync(selectedItem.IpAddressOrUrl);
+            openedAny = true;
+        }
+
+        return Task.FromResult(openedAny);
     }
 
     public void SetControls(DataGrid servicesDataGrid, DataGrid pingRepliesDataGrid)

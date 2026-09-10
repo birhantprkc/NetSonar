@@ -4,12 +4,9 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 using Avalonia.Platform;
-using NetSonar.Avalonia.Extensions;
 using StageKit;
 using StageKit.Runtime;
-using Updatum;
 
 namespace NetSonar.Avalonia;
 

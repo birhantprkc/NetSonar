@@ -11,6 +11,7 @@ using CommunityToolkit.Mvvm.Input;
 using NetSonar.Avalonia.Models;
 using NetSonar.Avalonia.Settings;
 using NetSonar.Avalonia.SystemOS;
+using StageKit.Primitives.System;
 using ZLinq;
 
 namespace NetSonar.Avalonia.ViewModels;
@@ -248,11 +249,11 @@ public partial class NetworkInterfacesPageModel : PageViewModelBase
         if (OperatingSystem.IsWindows())
         {
             // ReSharper disable once StringLiteralTypo
-            SystemAware.StartProcess("ncpa.cpl");
+            ProcessHelper.StartShell("ncpa.cpl");
         }
         else if (OperatingSystem.IsLinux())
         {
-            SystemAware.StartProcess("nm-connection-editor");
+            ProcessHelper.StartShell("nm-connection-editor");
         }
 
     }

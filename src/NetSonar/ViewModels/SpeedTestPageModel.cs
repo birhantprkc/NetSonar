@@ -1,4 +1,10 @@
-﻿using Avalonia.Controls;
+﻿using System;
+using System.ComponentModel;
+using System.IO;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
@@ -10,90 +16,17 @@ using NetSonar.Avalonia.Controls;
 using NetSonar.Avalonia.Extensions;
 using NetSonar.Avalonia.Network;
 using NetSonar.Avalonia.Settings;
-using NetSonar.Avalonia.SystemOS;
 using ObservableCollections;
-using System;
-using System.ComponentModel;
-using System.IO;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
+using StageKit.Primitives.System;
+using StageKit.Runtime.System;
 
 namespace NetSonar.Avalonia.ViewModels;
 
 public partial class SpeedTestPageModel : PageViewModelBase
 {
-    public override int Index => 2;
-    public override string DisplayName => App.Localization["Navigation.SpeedTest"];
-    public override MaterialIconKind Icon => MaterialIconKind.SpeedometerMedium;
-
     private readonly DispatcherTimer _timer = new();
 
     private CancellationTokenSource? _cancellationTokenSource;
-
-    public static ObservableList<SpeedTestResult> Results => SpeedTestsFile.Instance.Items;
-
-    public NotifyCollectionChangedSynchronizedViewList<SpeedTestResult> ResultsView { get; }
-
-    [ObservableProperty]
-    public partial SpeedTestResult? SelectedResult { get; set; }
-
-    [ObservableProperty]
-    public partial SpeedTestResult? DisplayResult { get; set; } = new();
-
-
-    [ObservableProperty]
-    public partial bool IsExecutableAvailable { get; private set; }
-
-    [ObservableProperty]
-    public partial bool IsExecutableInstalling { get; private set; }
-
-    public bool CanExecutableAutoInstall
-    {
-        get
-        {
-            if (OperatingSystem.IsMacOS())
-            {
-                return SystemAware.TryFindEnvFile("brew", out _);
-            }
-            if (OperatingSystem.IsWindows())
-            {
-                return SystemAware.TryFindEnvFile("winget.exe", out _);
-            }
-
-            if (OperatingSystem.IsLinux())
-            {
-                return LinuxOS.PackageManager != LinuxOS.LinuxPackageManager.Unknown;
-            }
-
-            return true;
-        }
-    }
-
-    [ObservableProperty]
-    public partial bool IsRunning { get; set; }
-
-    [ObservableProperty]
-    public partial ObservableList<SpeedTestResultServer?> Servers { get; private set; } = [];
-
-    [ObservableProperty]
-    public partial SpeedTestResultServer? SelectedServer { get; set; }
-
-    [ObservableProperty]
-    public partial string? SpeedTestVersion { get; private set; }
-
-    [ObservableProperty]
-    public partial int AngularMeterMaxValue { get; set; } = AppSettings.SpeedTest.InitialSpeedGaugeRange;
-
-    [ObservableProperty]
-    public partial int AngularMeterSlowSpeedSeries { get; set; } = 100;
-
-    [ObservableProperty]
-    public partial int AngularMeterMediumSpeedSeries { get; set; } = 100;
-
-    [ObservableProperty]
-    public partial int AngularMeterFastSpeedSeries { get; set; } = 100;
-
 
 
     private DataGrid _speedTestDataGrid = null!;
@@ -104,7 +37,8 @@ public partial class SpeedTestPageModel : PageViewModelBase
 
         AngularMeterSlowSpeedSeries = AppSettings.SpeedTest.InitialSpeedGaugeRange / 4;
         AngularMeterMediumSpeedSeries = AppSettings.SpeedTest.InitialSpeedGaugeRange / 4;
-        AngularMeterFastSpeedSeries = AppSettings.SpeedTest.InitialSpeedGaugeRange - AngularMeterSlowSpeedSeries - AngularMeterMediumSpeedSeries;
+        AngularMeterFastSpeedSeries = AppSettings.SpeedTest.InitialSpeedGaugeRange - AngularMeterSlowSpeedSeries -
+                                      AngularMeterMediumSpeedSeries;
 
         _timer.Tick += TimerOnTick;
         UpdateAutoSpeedTestTimer();
@@ -116,6 +50,63 @@ public partial class SpeedTestPageModel : PageViewModelBase
             IsExecutableAvailable = true;
         }
     }
+
+    public override int Index => 2;
+    public override string DisplayName => App.Localization["Navigation.SpeedTest"];
+    public override MaterialIconKind Icon => MaterialIconKind.SpeedometerMedium;
+
+    public static ObservableList<SpeedTestResult> Results => SpeedTestsFile.Instance.Items;
+
+    public NotifyCollectionChangedSynchronizedViewList<SpeedTestResult> ResultsView { get; }
+
+    [ObservableProperty] public partial SpeedTestResult? SelectedResult { get; set; }
+
+    [ObservableProperty] public partial SpeedTestResult? DisplayResult { get; set; } = new();
+
+
+    [ObservableProperty] public partial bool IsExecutableAvailable { get; private set; }
+
+    [ObservableProperty] public partial bool IsExecutableInstalling { get; private set; }
+
+    public bool CanExecutableAutoInstall
+    {
+        get
+        {
+            if (OperatingSystem.IsMacOS())
+            {
+                return HostSystem.TryFindExecutable("brew", out _);
+            }
+
+            if (OperatingSystem.IsWindows())
+            {
+                return HostSystem.TryFindExecutable("winget.exe", out _);
+            }
+
+            if (OperatingSystem.IsLinux())
+            {
+                return LinuxRuntime.PackageManager != LinuxPackageManager.Unknown;
+            }
+
+            return true;
+        }
+    }
+
+    [ObservableProperty] public partial bool IsRunning { get; set; }
+
+    [ObservableProperty] public partial ObservableList<SpeedTestResultServer?> Servers { get; private set; } = [];
+
+    [ObservableProperty] public partial SpeedTestResultServer? SelectedServer { get; set; }
+
+    [ObservableProperty] public partial string? SpeedTestVersion { get; private set; }
+
+    [ObservableProperty]
+    public partial int AngularMeterMaxValue { get; set; } = AppSettings.SpeedTest.InitialSpeedGaugeRange;
+
+    [ObservableProperty] public partial int AngularMeterSlowSpeedSeries { get; set; } = 100;
+
+    [ObservableProperty] public partial int AngularMeterMediumSpeedSeries { get; set; } = 100;
+
+    [ObservableProperty] public partial int AngularMeterFastSpeedSeries { get; set; } = 100;
 
     protected internal override void OnInitialized()
     {
@@ -132,7 +123,6 @@ public partial class SpeedTestPageModel : PageViewModelBase
 
     private void SpeedTestDataGridOnKeyUp(object? sender, KeyEventArgs e)
     {
-
         if (e.KeyModifiers == KeyModifiers.Shift)
         {
             if (e.Key == Key.Delete)
@@ -141,6 +131,7 @@ public partial class SpeedTestPageModel : PageViewModelBase
                 e.Handled = true;
                 return;
             }
+
             return;
         }
     }
@@ -160,6 +151,7 @@ public partial class SpeedTestPageModel : PageViewModelBase
                 AngularMeterMaxValue = AppSettings.SpeedTest.InitialSpeedGaugeRange;
                 return;
             }
+
             var maxSpeed = Math.Max(DisplayResult.Download.BandwidthMbps, DisplayResult.Upload.BandwidthMbps);
             if (maxSpeed >= AngularMeterMaxValue)
             {
@@ -237,14 +229,20 @@ public partial class SpeedTestPageModel : PageViewModelBase
         }
         else if (OperatingSystem.IsLinux())
         {
-            if (LinuxOS.PackageManager != LinuxOS.LinuxPackageManager.Unknown)
+            if (LinuxRuntime.PackageManager == LinuxPackageManager.Unknown)
+            {
+                App.ShowToast(NotificationType.Error, App.Localization["SpeedTest.Install.Title"],
+                    App.Localization["SpeedTest.Install.Error"]);
+            }
+            else
             {
                 await ProcessXExtensions.ExecuteHandled(
-                    $"{LinuxOS.PackageManagerCommand} install speedtest-cli",
+                    $"{LinuxRuntime.PackageManager.CommandName} install speedtest-cli",
                     toast,
                     true);
             }
         }
+
         CheckSpeedTestAvailable();
         IsExecutableInstalling = false;
     }
@@ -292,7 +290,7 @@ public partial class SpeedTestPageModel : PageViewModelBase
                             PacketLoss = result.PacketLoss,
                             Timestamp = result.Timestamp,
                             Error = result.Error,
-                            Ping = result.Ping,
+                            Ping = result.Ping
                         };
                         break;
                     case SpeedTestType.Download:
@@ -342,7 +340,6 @@ public partial class SpeedTestPageModel : PageViewModelBase
             cancellationTokenSource.Dispose();
             IsRunning = false;
         }
-
     }
 
     [RelayCommand]
@@ -361,7 +358,8 @@ public partial class SpeedTestPageModel : PageViewModelBase
         using var file = await TopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             ShowOverwritePrompt = true,
-            SuggestedFileName = StringExtensions.GetSafeFilename($"Speedtests#{_speedTestDataGrid.SelectedItems.Count}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
+            SuggestedFileName = StringExtensions.GetSafeFilename(
+                $"Speedtests#{_speedTestDataGrid.SelectedItems.Count}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
             DefaultExtension = "json",
             FileTypeChoices = AvaloniaExtensions.FilePickerJson
         });
@@ -377,14 +375,15 @@ public partial class SpeedTestPageModel : PageViewModelBase
             App.ShowToast(NotificationType.Success,
                 App.Localization["Export.Results.Title"],
                 App.Localization.Format("Export.Results.Success", _speedTestDataGrid.SelectedItems.Count, file.Name),
-                new ToastActionButton(App.Localization["Common.OpenFile"], toast => { SystemAware.StartProcess(filePath); }),
-                new ToastActionButton(App.Localization["Common.OpenFolder"], toast => { SystemAware.SelectFileOnExplorer(filePath); })
+                new ToastActionButton(App.Localization["Common.OpenFile"], toast => { HostSystem.OpenFile(filePath); }),
+                new ToastActionButton(App.Localization["Common.OpenFolder"],
+                    toast => { HostSystem.ShowFileInFileManager(filePath); })
             );
-
         }
         catch (Exception e)
         {
-            App.ShowExceptionToast(e, App.Localization["Export.Results.Title"], App.Localization["Export.Results.Error"]);
+            App.ShowExceptionToast(e, App.Localization["Export.Results.Title"],
+                App.Localization["Export.Results.Error"]);
         }
     }
 
@@ -395,7 +394,8 @@ public partial class SpeedTestPageModel : PageViewModelBase
         using var file = await TopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             ShowOverwritePrompt = true,
-            SuggestedFileName = StringExtensions.GetSafeFilename($"Speedtests#{Results.Count}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
+            SuggestedFileName =
+                StringExtensions.GetSafeFilename($"Speedtests#{Results.Count}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
             DefaultExtension = "json",
             FileTypeChoices = AvaloniaExtensions.FilePickerJson
         });
@@ -411,14 +411,15 @@ public partial class SpeedTestPageModel : PageViewModelBase
             App.ShowToast(NotificationType.Success,
                 App.Localization["Export.Results.Title"],
                 App.Localization.Format("Export.Results.Success", Results.Count, file.Name),
-                new ToastActionButton(App.Localization["Common.OpenFile"], toast => { SystemAware.StartProcess(filePath); }),
-                new ToastActionButton(App.Localization["Common.OpenFolder"], toast => { SystemAware.SelectFileOnExplorer(filePath); })
+                new ToastActionButton(App.Localization["Common.OpenFile"], toast => { HostSystem.OpenFile(filePath); }),
+                new ToastActionButton(App.Localization["Common.OpenFolder"],
+                    toast => { HostSystem.ShowFileInFileManager(filePath); })
             );
-
         }
         catch (Exception e)
         {
-            App.ShowExceptionToast(e, App.Localization["Export.Results.Title"], App.Localization["Export.Results.Error"]);
+            App.ShowExceptionToast(e, App.Localization["Export.Results.Title"],
+                App.Localization["Export.Results.Error"]);
         }
     }
 
@@ -431,7 +432,6 @@ public partial class SpeedTestPageModel : PageViewModelBase
                 App.Localization.Format("SpeedTest.RemoveSelected.Message", _speedTestDataGrid.SelectedItems.Count),
                 _ => Results.RemoveRange(_speedTestDataGrid.SelectedItems))
             .TryShow();
-
     }
 
     [RelayCommand]
@@ -442,7 +442,6 @@ public partial class SpeedTestPageModel : PageViewModelBase
                 App.Localization.Format("SpeedTest.RemoveAll.Title", Results.Count),
                 App.Localization.Format("SpeedTest.RemoveAll.Message", Results.Count), _ => Results.Clear())
             .TryShow();
-
     }
 
     public void SetControls(DataGrid speedTestDataGrid)

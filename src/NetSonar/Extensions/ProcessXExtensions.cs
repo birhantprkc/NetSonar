@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using StageKit.Primitives.System;
 using ZLinq;
 using ZLogger;
 
@@ -92,7 +93,7 @@ public static class ProcessXExtensions
             }
             else if (OperatingSystem.IsLinux())
             {
-                if (!SystemAware.TryFindEnvFile("pkexec", out var path))
+                if (!HostSystem.TryFindExecutable("pkexec", out var path))
                 {
                     App.ShowToast(NotificationType.Error, toast.Title, App.Localization["Operation.SudoRequired"]);
                     return false;

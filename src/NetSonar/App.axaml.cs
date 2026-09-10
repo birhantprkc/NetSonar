@@ -5,7 +5,6 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using NetSonar.Avalonia.ViewModels;
 using NetSonar.Avalonia.Views;
-using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using SukiUI.Dialogs;
 using SukiUI.Toasts;
@@ -15,7 +14,6 @@ using NetSonar.Avalonia.Views.Dialogs;
 using ZLogger;
 using System.Globalization;
 using StageKit;
-using Updatum;
 using ZLinq;
 
 namespace NetSonar.Avalonia;
@@ -124,7 +122,7 @@ public partial class App : Application
             }
             else
             {
-                Logger.ZLogCritical($"{crashReport.FormattedMessage ?? "The application crashed due an unexpected exception. (Unable to present the information in the UI"}.");
+                Logger.ZLogCritical($"{crashReport?.FormattedMessage ?? "The application crashed due an unexpected exception. (Unable to present the information in the UI"}.");
                 Environment.Exit(0);
             }
         }

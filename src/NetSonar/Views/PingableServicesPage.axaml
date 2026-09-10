@@ -416,14 +416,13 @@
                                       IsEnabled="{Binding SelectedService, Converter={x:Static ObjectConverters.IsNotNull}}"
                                       InputGesture="{OnPlatform macOS=Meta + G, Default=Ctrl + G}" />
 
-                            <MenuItem Command="{Binding LaunchUriCommand}"
-                                      CommandParameter="{Binding SelectedService.IpAddressOrUrl, FallbackValue={x:Null}}"
+                            <MenuItem Command="{Binding OpenSelectedInBrowserCommand}"
                                       Header="{localization:Translate Ui.OpenInBrowser}"
                                       Icon="{icon:MaterialIconExt Kind=Web}"
-                                      IsEnabled="{Binding SelectedService, Converter={x:Static ObjectConverters.IsNotNull}}"
                                       ToolTip.Tip="{Binding SelectedService.IpAddressOrUrl, FallbackValue={x:Null}}"
                                       InputGesture="{OnPlatform macOS=Meta + Enter, Default=Ctrl + Enter}"
-                                      HotKey="{Binding $self.InputGesture}" />
+                                      HotKey="{Binding $self.InputGesture}"
+                                      IsEnabled="{Binding CanOpenAnyInBrowser}"/>
 
                         </ContextMenu>
                     </DataGrid.ContextMenu>

@@ -6,8 +6,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Web;
 using StageKit;
-using StageKit.Runtime;
-using Updatum;
 
 namespace NetSonar.Avalonia.ViewModels.Dialogs;
 

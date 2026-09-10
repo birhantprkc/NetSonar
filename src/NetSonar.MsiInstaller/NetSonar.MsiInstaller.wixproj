@@ -25,9 +25,7 @@
         <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
-        <Content Include="Resources\Banner.fw.png" />
         <Content Include="Resources\Banner.jpg" />
-        <Content Include="Resources\Dialog.fw.png" />
         <Content Include="Resources\Dialog.jpg" />
     </ItemGroup>
     <ItemGroup>

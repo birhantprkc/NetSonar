@@ -69,11 +69,4 @@ public static partial class StringExtensions
         return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
 
     }
-    [GeneratedRegex(@"\r\n?|\n")]
-    private static partial Regex LinebreakRegex();
-
-    public static string ReplaceLinebreak(string str, string replacementStr)
-    {
-        return LinebreakRegex().Replace(str, replacementStr);
-    }
 }

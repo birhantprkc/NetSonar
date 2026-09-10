@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Fallout.Common" Version="10.4.0" />
+    <PackageReference Include="StageKit.Fallout" Version="0.3.6" />
   </ItemGroup>
 
 </Project>

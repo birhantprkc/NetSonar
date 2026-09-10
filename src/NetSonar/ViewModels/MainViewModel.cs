@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using NetSonar.Avalonia.SystemOS;
 using NetSonar.Avalonia.ViewModels.Dialogs;
 using StageKit;
+using StageKit.Primitives.System;
 using SukiUI.Dialogs;
 using ZLinq;
 
@@ -46,7 +47,7 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     public static void OpenProfileFolder()
     {
-        SystemAware.StartProcess(ApplicationKit.ProfilePath);
+        HostSystem.OpenDirectory(ApplicationKit.ProfilePath);
     }
 
     [RelayCommand]
@@ -58,7 +59,7 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     public static void OpenExecutableFolder()
     {
-        SystemAware.StartProcess(AppContext.BaseDirectory);
+        HostSystem.OpenDirectory(AppContext.BaseDirectory);
     }
 
     [RelayCommand]

@@ -5,7 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Octokit;
 using SukiUI.Dialogs;
-using Updatum;
+using StageKit.Updatum;
 
 namespace NetSonar.Avalonia.ViewModels.Dialogs;
 

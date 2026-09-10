@@ -28,6 +28,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text.Json;
 using System.Threading.Tasks;
+using StageKit.Primitives.System;
 using ZLinq;
 using ZLogger;
 
@@ -697,15 +698,15 @@ public partial class NetworkInterfaceBridge : ObservableObject, IDisposable
                 await textWriter.WriteLineAsync(string.Format("{0};{1};{2}",
                     nameValueGroup.Value.Group,
                     nameValueGroup.Value.Name,
-                    StringExtensions.ReplaceLinebreak(nameValueGroup.Value.Value, "|")
+                    nameValueGroup.Value.Value.ReplaceLineEndings("|")
                 ));
             }
 
             App.ShowToast(NotificationType.Success,
                 App.Localization.Format("Export.Interface.Title", "CSV"),
                 App.Localization.Format("Export.Interface.Success", Interface.Name, file.Name),
-                new ToastActionButton(App.Localization["Common.OpenFile"], toast => { SystemAware.StartProcess(filePath); }),
-                new ToastActionButton(App.Localization["Common.OpenFolder"], toast => { SystemAware.SelectFileOnExplorer(filePath); })
+                new ToastActionButton(App.Localization["Common.OpenFile"], toast => { HostSystem.OpenFile(filePath); }),
+                new ToastActionButton(App.Localization["Common.OpenFolder"], toast => { HostSystem.ShowFileInFileManager(filePath); })
                 );
         }
         catch (Exception e)
@@ -737,8 +738,8 @@ public partial class NetworkInterfaceBridge : ObservableObject, IDisposable
             App.ShowToast(NotificationType.Success,
                 App.Localization.Format("Export.Interface.Title", "JSON"),
                 App.Localization.Format("Export.Interface.Success", Interface.Name, file.Name),
-                new ToastActionButton(App.Localization["Common.OpenFile"], toast => { SystemAware.StartProcess(filePath); }),
-                new ToastActionButton(App.Localization["Common.OpenFolder"], toast => { SystemAware.SelectFileOnExplorer(filePath); })
+                new ToastActionButton(App.Localization["Common.OpenFile"], toast => { HostSystem.OpenFile(filePath); }),
+                new ToastActionButton(App.Localization["Common.OpenFolder"], toast => { HostSystem.ShowFileInFileManager(filePath); })
                 );
         }
         catch (Exception e)
@@ -774,7 +775,7 @@ public partial class NetworkInterfaceBridge : ObservableObject, IDisposable
                 await textWriter.WriteLineAsync($"[{group.Key}]");
                 foreach (var nameValueGroup in group)
                 {
-                    await textWriter.WriteLineAsync($"{nameValueGroup.Value.Name}={StringExtensions.ReplaceLinebreak(nameValueGroup.Value.Value, "|")}");
+                    await textWriter.WriteLineAsync($"{nameValueGroup.Value.Name}={nameValueGroup.Value.Value.ReplaceLineEndings("|")}");
                 }
                 await textWriter.WriteLineAsync();
             }
@@ -782,8 +783,8 @@ public partial class NetworkInterfaceBridge : ObservableObject, IDisposable
             App.ShowToast(NotificationType.Success,
                 App.Localization.Format("Export.Interface.Title", "INI"),
                 App.Localization.Format("Export.Interface.Success", Interface.Name, file.Name),
-                new ToastActionButton(App.Localization["Common.OpenFile"], toast => { SystemAware.StartProcess(filePath); }),
-                new ToastActionButton(App.Localization["Common.OpenFolder"], toast => { SystemAware.SelectFileOnExplorer(filePath); })
+                new ToastActionButton(App.Localization["Common.OpenFile"], toast => { HostSystem.OpenFile(filePath); }),
+                new ToastActionButton(App.Localization["Common.OpenFolder"], toast => { HostSystem.ShowFileInFileManager(filePath); })
                 );
         }
         catch (Exception e)

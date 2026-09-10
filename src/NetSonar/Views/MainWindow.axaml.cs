@@ -6,12 +6,11 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
-using NetSonar.Avalonia.Controls;
 using NetSonar.Avalonia.Settings;
 
 namespace NetSonar.Avalonia.Views;
 
-public partial class MainWindow : SukiWindowExtended
+public partial class MainWindow : GenericWindow
 {
     public MainWindow()
     {
@@ -21,7 +20,7 @@ public partial class MainWindow : SukiWindowExtended
         Title += " [Debug]";
 #endif
 
-        KeyBindings.Add(new KeyBinding()
+        KeyBindings.Add(new KeyBinding
         {
             Gesture = new KeyGesture(Key.F11),
             Command = new RelayCommand(ToggleFullScreen)
@@ -35,7 +34,6 @@ public partial class MainWindow : SukiWindowExtended
         {
             DispatcherTimer.RunOnce(() => _ = App.CheckForUpdatesAsync(false), TimeSpan.FromSeconds(5));
         }
-
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs e)
@@ -52,6 +50,7 @@ public partial class MainWindow : SukiWindowExtended
                 }*/
             }
         }
+
         base.OnPropertyChanged(e);
     }
 

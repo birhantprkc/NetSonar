@@ -4,14 +4,23 @@
         <IsTestProject>true</IsTestProject>
         <!-- Use the VSTest runner instead of Microsoft.Testing.Platform so IDE test discovery works. -->
         <UseVSTest>true</UseVSTest>
+        <!-- Override the package versions MSTest.Sdk injects; adding PackageReference items here would duplicate them (NU1504). -->
+        <MicrosoftNETTestSdkVersion>18.10.0</MicrosoftNETTestSdkVersion>
+        <MSTestVersion>4.4.0</MSTestVersion>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\NetSonar\NetSonar.Avalonia.csproj" />
+        <ProjectReference Include="..\..\src\NetSonar\NetSonar.Avalonia.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="..\..\src\NetSonar\Localization\Strings*.resx" Link="Localization\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="..\..\src\NetSonar\Localization\Strings*.resx" Link="Localization\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="Microsoft.NET.Test.Sdk">
+        <Version>18.10.0</Version>
+      </PackageReference>
     </ItemGroup>
 
 </Project>

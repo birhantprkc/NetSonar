@@ -8,12 +8,13 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using StageKit.Primitives.System;
 
 namespace NetSonar.Avalonia.Network;
 
 public class SpeedTestService
 {
-    private static string SpeedTestPath { get; } = SystemAware.NormalizeExecutableExtension(Path.Combine(AppContext.BaseDirectory, "binaries", "speedtest", "speedtest"));
+    private static string SpeedTestPath { get; } = HostSystem.NormalizeExecutableExtension(Path.Combine(AppContext.BaseDirectory, "binaries", "speedtest", "speedtest"));
 
     private const string SpeedTestDefaultArgs = "--accept-license --accept-gdpr";
 

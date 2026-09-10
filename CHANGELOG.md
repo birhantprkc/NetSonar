@@ -1,4 +1,4 @@
-# Unreleased
+# v0.5.0 (05/09/2026)
 
 - Add batch import of services for all supported protocols from tab- or pipe-separated clipboard data, including
   explicit protocol schemes, default-port protocol inference, optional intervals, descriptions, groups, duplicate
@@ -19,6 +19,8 @@
 - Fix the macOS gestures of pause all and resume all colliding with pause selected and resume selected, and the resume
   all context-menu entry advertising the resume selected gesture
 - Refine Simplified Chinese translations by @dearmb (#26)
+- Upgrade .NET from 10.0.10 to 10.0.12
+- Upgrade AvaloniaUI from 12.1.1 to 12.1.2
 
 # v0.4.1 (05/08/2026)
 

@@ -7,7 +7,7 @@ using NetSonar.Avalonia.Controls;
 using NetSonar.Avalonia.ViewModels.Dialogs;
 using StageKit.Runtime;
 using SukiUI.Dialogs;
-using Updatum;
+using StageKit.Updatum;
 using ZLogger;
 
 namespace NetSonar.Avalonia;
