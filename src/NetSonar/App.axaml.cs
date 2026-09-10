@@ -182,7 +182,9 @@ public partial class App : Application
             else
             {
 #pragma warning disable CS0162 // Unreachable code detected
+                var primaryProcessId = _appInstanceGuard?.PrimaryProcess?.Id;
                 _appInstanceGuard?.Dispose();
+                _appInstanceGuard = null;
 
                 if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 {
@@ -197,7 +199,7 @@ public partial class App : Application
                         Topmost = true,
                         Content = new InstanceAlreadyRunningDialogView
                         {
-                            DataContext = new InstanceAlreadyRunningDialogModel()
+                            DataContext = new InstanceAlreadyRunningDialogModel(primaryProcessId)
                         }
                     };
                     desktop.MainWindow = MainWindow;

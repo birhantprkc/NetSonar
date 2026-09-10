@@ -42,7 +42,7 @@ public partial class AboutDialogModel : DialogViewModelBase
     {
         get
         {
-            if (HostSystem.TryGetMemoryStatus(out var memory) || memory.TotalPhysicalBytes == 0)
+            if (!HostSystem.TryGetMemoryStatus(out var memory) || memory.TotalPhysicalBytes == 0)
             {
                 return App.Localization["Common.Unknown"];
             }

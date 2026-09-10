@@ -28,6 +28,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text.Json;
 using System.Threading.Tasks;
+using StageKit.Primitives;
 using StageKit.Primitives.System;
 using ZLinq;
 using ZLogger;
@@ -674,7 +675,7 @@ public partial class NetworkInterfaceBridge : ObservableObject, IDisposable
         using var file = await App.TopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             ShowOverwritePrompt = true,
-            SuggestedFileName = StringExtensions.GetSafeFilename($"{Interface.Name}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.csv"),
+            SuggestedFileName = FileUtilities.SanitizeFileName($"{Interface.Name}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.csv"),
             DefaultExtension = "csv",
             FileTypeChoices = AvaloniaExtensions.FilePickerCsv
         });
@@ -722,7 +723,7 @@ public partial class NetworkInterfaceBridge : ObservableObject, IDisposable
         using var file = await App.TopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             ShowOverwritePrompt = true,
-            SuggestedFileName = StringExtensions.GetSafeFilename($"{Interface.Name}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
+            SuggestedFileName = FileUtilities.SanitizeFileName($"{Interface.Name}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
             DefaultExtension = "json",
             FileTypeChoices = AvaloniaExtensions.FilePickerJson
         });
@@ -755,7 +756,7 @@ public partial class NetworkInterfaceBridge : ObservableObject, IDisposable
         using var file = await App.TopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             ShowOverwritePrompt = true,
-            SuggestedFileName = StringExtensions.GetSafeFilename($"{Interface.Name}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.ini"),
+            SuggestedFileName = FileUtilities.SanitizeFileName($"{Interface.Name}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.ini"),
             DefaultExtension = "ini",
             FileTypeChoices = AvaloniaExtensions.FilePickerIni
         });

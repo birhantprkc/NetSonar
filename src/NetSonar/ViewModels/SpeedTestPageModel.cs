@@ -17,6 +17,7 @@ using NetSonar.Avalonia.Extensions;
 using NetSonar.Avalonia.Network;
 using NetSonar.Avalonia.Settings;
 using ObservableCollections;
+using StageKit.Primitives;
 using StageKit.Primitives.System;
 using StageKit.Runtime.System;
 
@@ -358,7 +359,7 @@ public partial class SpeedTestPageModel : PageViewModelBase
         using var file = await TopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             ShowOverwritePrompt = true,
-            SuggestedFileName = StringExtensions.GetSafeFilename(
+            SuggestedFileName = FileUtilities.SanitizeFileName(
                 $"Speedtests#{_speedTestDataGrid.SelectedItems.Count}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
             DefaultExtension = "json",
             FileTypeChoices = AvaloniaExtensions.FilePickerJson
@@ -395,7 +396,7 @@ public partial class SpeedTestPageModel : PageViewModelBase
         {
             ShowOverwritePrompt = true,
             SuggestedFileName =
-                StringExtensions.GetSafeFilename($"Speedtests#{Results.Count}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
+                FileUtilities.SanitizeFileName($"Speedtests#{Results.Count}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
             DefaultExtension = "json",
             FileTypeChoices = AvaloniaExtensions.FilePickerJson
         });

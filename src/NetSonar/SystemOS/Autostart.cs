@@ -3,6 +3,7 @@ using StageKit;
 using System;
 using System.IO;
 using System.Runtime.Versioning;
+using StageKit.Runtime;
 using ZLogger;
 
 namespace NetSonar.Avalonia.SystemOS;
@@ -70,9 +71,6 @@ public static class Autostart
 
     }
 
-    private static string ExecutablePath =>
-        Environment.ProcessPath ?? throw new InvalidOperationException("Cannot resolve current executable path.");
-
     #region Windows
 
     private const string WindowsRunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
@@ -91,7 +89,7 @@ public static class Autostart
                         ?? Registry.CurrentUser.CreateSubKey(WindowsRunKey, writable: true);
         if (enabled)
         {
-            key.SetValue(AppKey, $"\"{ExecutablePath}\" {LaunchArgs}");
+            key.SetValue(AppKey, $"\"{EntryApplication.ExecutablePath}\" {LaunchArgs}");
         }
         else
         {
@@ -130,7 +128,7 @@ public static class Autostart
              [Desktop Entry]
              Type=Application
              Name={AppKey}
-             Exec="{ExecutablePath}" {LaunchArgs}
+             Exec="{EntryApplication.ExecutablePath}" {LaunchArgs}
              Terminal=false
              X-GNOME-Autostart-enabled=true
              """);
@@ -164,7 +162,7 @@ public static class Autostart
                  <string>{LaunchAgentLabel}</string>
                  <key>ProgramArguments</key>
                  <array>
-                     <string>{ExecutablePath}</string>
+                     <string>{EntryApplication.ExecutablePath}</string>
                      <string>{LaunchArgs}</string>
                  </array>
                  <key>RunAtLoad</key>

@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Material.Icons;
 using Material.Icons.Avalonia;
 using NetSonar.Avalonia.Extensions;
+using StageKit.Primitives.Extensions;
 
 namespace NetSonar.Avalonia.Models;
 
@@ -27,7 +28,7 @@ public partial class EnumViewFilter : ObservableObject
 
     public EnumViewFilter(Enum enumValue, bool value = true)
     {
-        Description = enumValue.ToString().InsertSpaceBetweenCamelCase();
+        Description = enumValue.ToString().InsertCharBetweenCamelCase();
         Include = value;
     }
 

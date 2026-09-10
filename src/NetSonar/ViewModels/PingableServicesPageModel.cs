@@ -26,6 +26,7 @@ using NetSonar.Avalonia.ViewModels.Dialogs;
 using NetSonar.Avalonia.ViewModels.Fragments;
 using NetSonar.Avalonia.Views;
 using ObservableCollections;
+using StageKit.Primitives;
 using StageKit.Primitives.System;
 using SukiUI.Dialogs;
 using ZLinq;
@@ -569,7 +570,7 @@ public partial class PingableServicesPageModel : PageViewModelBase
         {
             ShowOverwritePrompt = true,
             SuggestedFileName =
-                StringExtensions.GetSafeFilename(
+                FileUtilities.SanitizeFileName(
                     $"services#{selectedServices.Length}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
             DefaultExtension = "json",
             FileTypeChoices = AvaloniaExtensions.FilePickerJson
@@ -609,7 +610,7 @@ public partial class PingableServicesPageModel : PageViewModelBase
         {
             ShowOverwritePrompt = true,
             SuggestedFileName =
-                StringExtensions.GetSafeFilename($"services#{services.Length}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
+                FileUtilities.SanitizeFileName($"services#{services.Length}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
             DefaultExtension = "json",
             FileTypeChoices = AvaloniaExtensions.FilePickerJson
         });
@@ -648,7 +649,7 @@ public partial class PingableServicesPageModel : PageViewModelBase
         using var file = await TopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             ShowOverwritePrompt = true,
-            SuggestedFileName = StringExtensions.GetSafeFilename(
+            SuggestedFileName = FileUtilities.SanitizeFileName(
                 $"{selectedService.ProtocolType.ToString().ToLowerInvariant()}-{selectedService.HostName}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.csv"),
             DefaultExtension = "csv",
             FileTypeChoices = AvaloniaExtensions.FilePickerCsv
@@ -716,7 +717,7 @@ public partial class PingableServicesPageModel : PageViewModelBase
         using var file = await TopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             ShowOverwritePrompt = true,
-            SuggestedFileName = StringExtensions.GetSafeFilename(
+            SuggestedFileName = FileUtilities.SanitizeFileName(
                 $"{selectedService.ProtocolType.ToString().ToLowerInvariant()}-{selectedService.HostName}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.tsv"),
             DefaultExtension = "tsv",
             FileTypeChoices = AvaloniaExtensions.FilePickerTsv
@@ -781,7 +782,7 @@ public partial class PingableServicesPageModel : PageViewModelBase
         using var file = await TopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             ShowOverwritePrompt = true,
-            SuggestedFileName = StringExtensions.GetSafeFilename(
+            SuggestedFileName = FileUtilities.SanitizeFileName(
                 $"{selectedService.ProtocolType.ToString().ToLowerInvariant()}-{selectedService.HostName}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}.json"),
             DefaultExtension = "json",
             FileTypeChoices = AvaloniaExtensions.FilePickerJson
