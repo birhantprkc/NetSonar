@@ -466,3 +466,4 @@ secret/
 
 # AI
 .serena/
+.semgrep/

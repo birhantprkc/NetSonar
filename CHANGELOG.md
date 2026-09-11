@@ -1,3 +1,13 @@
+# v0.5.1 (11/09/2026)
+
+- Fix speedtest not working on linux and macOS systems
+- Let users choose the WiX installation directory and restore the last directory on later installs, upgrades, and
+  reinstalls
+- Record the installed MSI product code, software version, architecture, and executable path alongside the remembered
+  installation directory, while removing installed-product metadata during uninstall
+- Move the optional "Start program after install" checkbox to the completion page
+- Fix `install-netsonar` script to have minimum version requirement for macOS
+
 # v0.5.0 (10/09/2026)
 
 - Add batch import of services for all supported protocols from tab- or pipe-separated clipboard data, including

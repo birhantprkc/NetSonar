@@ -6,17 +6,17 @@
 
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
-        <AssemblyName>$(ProductName)</AssemblyName>
+        <AssemblyName>$(SoftwareName)</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\NetSonar\NetSonar.Avalonia.csproj" />
-        <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+        <ProjectReference Include="..\NetSonar\NetSonar.Avalonia.csproj"/>
+        <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)"/>
     </ItemGroup>
 
     <ItemGroup>
         <Content Include="..\..\dependencies\$(RuntimeIdentifier)\**"
-                        Condition="'$(RuntimeIdentifier)' != ''">
+                 Condition="'$(RuntimeIdentifier)' != ''">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <Link>binaries\%(RecursiveDir)%(Filename)%(Extension)</Link>
         </Content>

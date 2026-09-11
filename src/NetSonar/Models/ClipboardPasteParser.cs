@@ -19,17 +19,17 @@ namespace NetSonar.Avalonia.Models;
 public static class ClipboardPasteParser
 {
     private static readonly HashSet<string> HeaderTokens =
-    [
-        with(StringComparer.OrdinalIgnoreCase),
+    new(StringComparer.OrdinalIgnoreCase)
+    {
         "ip", "address", "host", "hostname", "url", "server", "target", "destination",
         "endpoint", "ipaddress", "name", "serveraddress", "地址", "服务器", "主机"
-    ];
+    };
 
     private static readonly HashSet<string> IntervalHeaderTokens =
-    [
-        with(StringComparer.OrdinalIgnoreCase),
+    new(StringComparer.OrdinalIgnoreCase)
+    {
         "interval", "pinginterval", "间隔", "间隔时间", "周期"
-    ];
+    };
 
     public static ClipboardPasteResult Parse(string? text)
     {

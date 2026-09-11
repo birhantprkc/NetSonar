@@ -7,10 +7,10 @@
         <FalloutScriptDirectory>..</FalloutScriptDirectory>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
-    
+
     <ItemGroup>
         <PackageReference Include="Fallout.Common" Version="10.4.0"/>
-        <PackageReference Include="StageKit.Fallout" Version="0.3.6"/>
+        <PackageReference Include="StageKit.Fallout" Version="0.3.8"/>
     </ItemGroup>
 
 </Project>
