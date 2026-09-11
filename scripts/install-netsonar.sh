@@ -6,6 +6,7 @@ APPLICATION_NAME='NetSonar'
 APPLICATION_SLUG='netsonar'
 EXECUTABLE_NAME='NetSonar'
 MACOS_MINIMUM_VERSION='13.0'
+KILL_RUNNING_INSTANCES='true'
 PACKAGE_TYPES=(
   'linux-deb'
   'linux-rpm'
@@ -127,6 +128,14 @@ check_macos_version() {
     }
   '; then
     fail "macOS ${MACOS_MINIMUM_VERSION} or newer is required (detected ${current_version})."
+  fi
+}
+
+kill_running_instances() {
+  [ "$KILL_RUNNING_INSTANCES" = 'true' ] || return 0
+  command_exists pkill || return 0
+  if pkill -TERM -x "$EXECUTABLE_NAME" 2>/dev/null; then
+    sleep 1
   fi
 }
 
@@ -561,6 +570,7 @@ ASSET_FILE="$TEMP_DIRECTORY/$ASSET_NAME"
 
 printf 'Downloading %s (%s)...\n' "$APPLICATION_NAME" "$SELECTED_PACKAGE_TYPE"
 download_file "$SELECTED_ASSET_URL" "$ASSET_FILE"
+kill_running_instances
 install_selected_package
 printf '%s was installed successfully.\n' "$APPLICATION_NAME"
 case "$SELECTED_PACKAGE_TYPE" in
