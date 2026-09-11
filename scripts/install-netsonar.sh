@@ -5,6 +5,7 @@ REPOSITORY='sn4k3/NetSonar'
 APPLICATION_NAME='NetSonar'
 APPLICATION_SLUG='netsonar'
 EXECUTABLE_NAME='NetSonar'
+MACOS_MINIMUM_VERSION='13.0'
 PACKAGE_TYPES=(
   'linux-deb'
   'linux-rpm'
@@ -106,6 +107,27 @@ normalize_architecture() {
     arm64|aarch64) printf 'arm64\n' ;;
     *) fail "Unsupported architecture: $(uname -m)" ;;
   esac
+}
+
+check_macos_version() {
+  local current_version
+  current_version="$(sw_vers -productVersion)" ||
+    fail 'Unable to determine the macOS version.'
+  if ! awk -v current="$current_version" -v minimum="$MACOS_MINIMUM_VERSION" '
+    BEGIN {
+      split(current, current_parts, ".")
+      split(minimum, minimum_parts, ".")
+      for (index = 1; index <= 3; index++) {
+        current_part = current_parts[index] + 0
+        minimum_part = minimum_parts[index] + 0
+        if (current_part > minimum_part) exit 0
+        if (current_part < minimum_part) exit 1
+      }
+      exit 0
+    }
+  '; then
+    fail "macOS ${MACOS_MINIMUM_VERSION} or newer is required (detected ${current_version})."
+  fi
 }
 
 detect_linux_native_package() {
@@ -485,6 +507,9 @@ case "$(uname -s)" in
   Darwin) PLATFORM='macos' ;;
   *) fail "Unsupported operating system: $(uname -s)" ;;
 esac
+if [ "$PLATFORM" = 'macos' ]; then
+  check_macos_version
+fi
 ARCHITECTURE="$(normalize_architecture)"
 LINUX_NATIVE_PACKAGE=''
 if [ "$PLATFORM" = 'linux' ]; then
